@@ -8,10 +8,10 @@
 #define LCD_ADDRESS 0x3F
 #define SENSOR_ADDRESS 0x5B
 #define DHTTYPE DHT11
-#define INT_PIN 6
-#define WAKE_PIN 7
-#define TEMP_SENSOR_PIN 5
-#define GAS_SENSOR_PIN A7
+#define INT_PIN 7
+#define WAKE_PIN 8
+#define TEMP_SENSOR_PIN 6
+#define GAS_SENSOR_PIN A3
 
 struct AirQualityData
 {
@@ -24,6 +24,7 @@ struct AirQualityData
 };
 
 void UpdateLCD(Task *me);
+void SendToTTN(Task *me);
 void ReadCCS811Sensor(Task *me);
 void ReadGassSensorData(Task *me);
 void ReadTemperatureAndHumidity(Task *me);

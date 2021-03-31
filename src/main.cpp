@@ -37,7 +37,7 @@ void setup()
     {
     }
   };
-/*
+
   int connected = modem.joinOTAA(SECRET_APP_EUI, SECRET_APP_KEY);
   if (!connected)
   {
@@ -45,7 +45,7 @@ void setup()
     while (1)
     {
     }
-  }*/
+  }
 
   SoftTimer.add(&readGasSensorData);
   SoftTimer.add(&readTemperatureAndHumidity);
@@ -54,6 +54,8 @@ void setup()
   SoftTimer.add(&sendToTTN);
 
   digitalWrite(WAKE_PIN, 1);
+
+  modem.dataRate(5);
 }
 
 /*
@@ -104,7 +106,7 @@ void SendToTTN(Task *me)
   message.addUint16(airQualityData.tvoc);
   message.addUint16(airQualityData.ppm);
 
-  /*int err;
+ int err;
   modem.beginPacket();
   modem.write(message.getBytes(), message.getLength());
 
@@ -116,7 +118,7 @@ void SendToTTN(Task *me)
   else
   {
     Serial.println("Error");
-  }*/
+  }
 
   Serial.println("Sent");
   delete &message;

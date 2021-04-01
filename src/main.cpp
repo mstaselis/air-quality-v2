@@ -13,12 +13,12 @@ Task readCCS811(500, ReadCCS811Sensor);
 Task readGasSensorData(1500, ReadGassSensorData);
 Task readTemperatureAndHumidity(1500, ReadTemperatureAndHumidity);
 Task updateLCD(2000, UpdateLCD);
-//Task sendToTTN(600000, SendToTTN);
+Task sendToTTN(3600000, SendToTTN);
 
 CCS811Sensor ccs811Sensor(SENSOR_ADDRESS);
 DHT dht(TEMP_SENSOR_PIN, DHTTYPE);
 AirQualityData airQualityData;
-//LoRaModem modem;
+LoRaModem modem;
 
 void setup()
 {
@@ -30,10 +30,10 @@ void setup()
   lcd.init();
   lcd.backlight();
 
-  /*
   if (!modem.begin(EU868))
   {
-    Serial.println("Failed to start module");
+    lcd.setCursor(0, 0);
+    lcd.print("Failed to start module");
     while (1)
     {
     }
@@ -42,21 +42,22 @@ void setup()
   int connected = modem.joinOTAA(SECRET_APP_EUI, SECRET_APP_KEY);
   if (!connected)
   {
-    Serial.println("Something went wrong; are you indoor? Move near a window and retry");
+    lcd.setCursor(0, 0);
+    lcd.print("Something went wrong; are you indoor? Move near a window and retry");
     while (1)
     {
     }
   }
-*/
+
   SoftTimer.add(&readGasSensorData);
   SoftTimer.add(&readTemperatureAndHumidity);
   SoftTimer.add(&readCCS811);
   SoftTimer.add(&updateLCD);
-  //SoftTimer.add(&sendToTTN);
+  SoftTimer.add(&sendToTTN);
 
   digitalWrite(WAKE_PIN, 1);
 
-  // modem.dataRate(5);
+  modem.dataRate(5);
 }
 
 void UpdateLCD(Task *me)
@@ -64,7 +65,6 @@ void UpdateLCD(Task *me)
   sprintf(firstLineBuffer, "T:%2d H:%2d P:%4d", (int)airQualityData.temperature, (int)(airQualityData.humidity >= 100 ? 99 : airQualityData.humidity), airQualityData.gasesPPM);
   lcd.setCursor(0, 0);
   lcd.print(firstLineBuffer);
-  Serial.println(firstLineBuffer);
 
   sprintf(secondLineBuffer, "CO2:%4d VO:%4d", airQualityData.co2, airQualityData.tvoc);
   lcd.setCursor(0, 1);
@@ -97,7 +97,7 @@ void ReadTemperatureAndHumidity(Task *me)
   airQualityData.humidity = dht.readHumidity();
   airQualityData.temperature = dht.readTemperature();
 }
-/*
+
 void SendToTTN(Task *me)
 {
   LoraMessage message;
@@ -111,7 +111,7 @@ void SendToTTN(Task *me)
   modem.beginPacket();
   modem.write(message.getBytes(), message.getLength());
 
-  err = modem.endPacket(true);
+  err = modem.endPacket(false);
   if (err > 0)
   {
     Serial.println("Message sent correctly!");
@@ -124,4 +124,3 @@ void SendToTTN(Task *me)
   Serial.println("Sent");
   delete &message;
 }
-*/

@@ -13,7 +13,7 @@ Task readCCS811(500, ReadCCS811Sensor);
 Task readGasSensorData(1500, ReadGassSensorData);
 Task readTemperatureAndHumidity(1500, ReadTemperatureAndHumidity);
 Task updateLCD(2000, UpdateLCD);
-Task sendToTTN(3600000, SendToTTN);
+Task sendToTTN(1800000, SendToTTN);
 
 CCS811Sensor ccs811Sensor(SENSOR_ADDRESS);
 DHT dht(TEMP_SENSOR_PIN, DHTTYPE);
@@ -105,7 +105,7 @@ void SendToTTN(Task *me)
   message.addHumidity(airQualityData.humidity);
   message.addUint16(airQualityData.co2);
   message.addUint16(airQualityData.tvoc);
-  message.addUint16(airQualityData.ppm);
+  message.addUint16(airQualityData.gasesPPM);
 
   int err;
   modem.beginPacket();

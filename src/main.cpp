@@ -4,21 +4,21 @@
 #include "arduino_secrets.h"
 #include "LoraMessage.h"
 
-char firstLineBuffer[16];
-char secondLineBuffer[16];
+char firstLineBuffer[17];
+char secondLineBuffer[17];
 
-//LiquidCrystal_I2C lcd(LCD_ADDRESS, 20, 4);
+LiquidCrystal_I2C lcd(LCD_ADDRESS, 20, 4);
 
 Task readCCS811(500, ReadCCS811Sensor);
 Task readGasSensorData(1500, ReadGassSensorData);
 Task readTemperatureAndHumidity(1500, ReadTemperatureAndHumidity);
-//Task updateLCD(2000, UpdateLCD);
-Task sendToTTN(600000, SendToTTN);
+Task updateLCD(2000, UpdateLCD);
+//Task sendToTTN(600000, SendToTTN);
 
 CCS811Sensor ccs811Sensor(SENSOR_ADDRESS);
 DHT dht(TEMP_SENSOR_PIN, DHTTYPE);
 AirQualityData airQualityData;
-LoRaModem modem;
+//LoRaModem modem;
 
 void setup()
 {
@@ -27,9 +27,10 @@ void setup()
   Wire.begin();
   dht.begin();
   ccs811Sensor.Init();
-  //lcd.init();
-  //lcd.backlight();
+  lcd.init();
+  lcd.backlight();
 
+  /*
   if (!modem.begin(EU868))
   {
     Serial.println("Failed to start module");
@@ -46,29 +47,29 @@ void setup()
     {
     }
   }
-
+*/
   SoftTimer.add(&readGasSensorData);
   SoftTimer.add(&readTemperatureAndHumidity);
   SoftTimer.add(&readCCS811);
-  //SoftTimer.add(&updateLCD);
-  SoftTimer.add(&sendToTTN);
+  SoftTimer.add(&updateLCD);
+  //SoftTimer.add(&sendToTTN);
 
   digitalWrite(WAKE_PIN, 1);
 
-  modem.dataRate(5);
+  // modem.dataRate(5);
 }
 
-/*
 void UpdateLCD(Task *me)
 {
   sprintf(firstLineBuffer, "T:%2d H:%2d P:%4d", (int)airQualityData.temperature, (int)(airQualityData.humidity >= 100 ? 99 : airQualityData.humidity), airQualityData.gasesPPM);
   lcd.setCursor(0, 0);
   lcd.print(firstLineBuffer);
+  Serial.println(firstLineBuffer);
 
   sprintf(secondLineBuffer, "CO2:%4d VO:%4d", airQualityData.co2, airQualityData.tvoc);
   lcd.setCursor(0, 1);
   lcd.print(secondLineBuffer);
-}*/
+}
 
 void ReadCCS811Sensor(Task *me)
 {
@@ -79,7 +80,7 @@ void ReadCCS811Sensor(Task *me)
 
     CCS811SensorData data = ccs811Sensor.GetSensorData();
     airQualityData.co2 = data.co2;
-    airQualityData.tvoc = data.tvoc;   
+    airQualityData.tvoc = data.tvoc;
 
     digitalWrite(WAKE_PIN, 1);
     delay(1);
@@ -96,7 +97,7 @@ void ReadTemperatureAndHumidity(Task *me)
   airQualityData.humidity = dht.readHumidity();
   airQualityData.temperature = dht.readTemperature();
 }
-
+/*
 void SendToTTN(Task *me)
 {
   LoraMessage message;
@@ -106,7 +107,7 @@ void SendToTTN(Task *me)
   message.addUint16(airQualityData.tvoc);
   message.addUint16(airQualityData.ppm);
 
- int err;
+  int err;
   modem.beginPacket();
   modem.write(message.getBytes(), message.getLength());
 
@@ -123,3 +124,4 @@ void SendToTTN(Task *me)
   Serial.println("Sent");
   delete &message;
 }
+*/

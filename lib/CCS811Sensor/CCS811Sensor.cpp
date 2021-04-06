@@ -8,12 +8,14 @@ CCS811Sensor::CCS811Sensor(uint8_t address, uint8_t mode)
     this->ccs811 = new CCS811(this->address);
 }
 
-void CCS811Sensor::Init()
+bool CCS811Sensor::Init()
 {
     CCS811Core::CCS811_Status_e status = ccs811->beginWithStatus();
     delay(1500);    
     ccs811->setDriveMode(this->mode);    
-    ccs811->enableInterrupts();    
+    ccs811->enableInterrupts();
+
+    return status == CCS811Core::CCS811_Status_e::CCS811_Stat_SUCCESS;
 }
 
 CCS811SensorData CCS811Sensor::GetSensorData()

@@ -17,6 +17,6 @@ class CCS811Sensor
     CCS811Sensor(uint8_t address, uint8_t mode = 2);    
     ~CCS811Sensor();  
 
-    void Init(); 
+    bool Init(); 
     CCS811SensorData GetSensorData();     
 };

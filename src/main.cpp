@@ -4,10 +4,12 @@
 #include "arduino_secrets.h"
 #include "LoraMessage.h"
 
+#define LED 5
+
 Task readCCS811(500, ReadCCS811Sensor);
 Task readGasSensorData(5000, ReadGassSensorData);
 Task readTemperatureAndHumidity(5000, ReadTemperatureAndHumidity);
-Task sendToTTN(1800000, SendToTTN);
+Task sendToTTN(1200000, SendToTTN);
 
 CCS811Sensor ccs811Sensor(SENSOR_ADDRESS);
 DHT dht(TEMP_SENSOR_PIN, DHTTYPE);
@@ -17,26 +19,28 @@ LoRaModem modem;
 void setup()
 {
   Serial.begin(9600);
+  pinMode(LED, OUTPUT);
 
   Wire.begin();
   dht.begin();
-  ccs811Sensor.Init();
+  bool init = ccs811Sensor.Init();
+
+  if (!init)
+  {
+    CriticalError();
+  }
 
   if (!modem.begin(EU868))
   {
     Serial.println("Failed to start module");
-    while (1)
-    {
-    }
+    CriticalError();
   };
 
   int connected = modem.joinOTAA(SECRET_APP_EUI, SECRET_APP_KEY);
   if (!connected)
   {
     Serial.println("Something went wrong; are you indoor? Move near a window and retry");
-    while (1)
-    {
-    }
+    CriticalError();
   }
 
   SoftTimer.add(&readGasSensorData);
@@ -84,9 +88,20 @@ void SendToTTN(Task *me)
   message.addUint16(airQualityData.co2);
   message.addUint16(airQualityData.tvoc);
   message.addUint16(airQualityData.gasesPPM);
-  
+
   modem.beginPacket();
   modem.write(message.getBytes(), message.getLength());
 
   modem.endPacket(false);
+}
+
+void CriticalError()
+{
+  while (1)
+  {
+    digitalWrite(LED, HIGH);
+    delay(500);
+    digitalWrite(LED, LOW);
+    delay(500);    
+  }
 }

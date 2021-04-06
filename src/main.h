@@ -23,6 +23,7 @@ struct AirQualityData
     int gasesPPM;
 };
 
+void CriticalError();
 void UpdateLCD(Task *me);
 void SendToTTN(Task *me);
 void ReadCCS811Sensor(Task *me);

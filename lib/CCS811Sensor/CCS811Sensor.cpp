@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "CCS811Sensor.h"
 
 CCS811Sensor::CCS811Sensor(uint8_t address, uint8_t mode)
@@ -9,7 +10,8 @@ CCS811Sensor::CCS811Sensor(uint8_t address, uint8_t mode)
 
 void CCS811Sensor::Init()
 {
-    ccs811->beginWithStatus();
+    CCS811Core::CCS811_Status_e status = ccs811->beginWithStatus();
+    delay(1500);    
     ccs811->setDriveMode(this->mode);    
     ccs811->enableInterrupts();    
 }

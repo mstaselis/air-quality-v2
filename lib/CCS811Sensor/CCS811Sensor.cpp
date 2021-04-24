@@ -25,7 +25,10 @@ CCS811SensorData CCS811Sensor::GetSensorData()
     return data;
 }
 
-
+void CCS811Sensor::SetBaseData(float temperature, float humidity)
+{
+    this->ccs811->setEnvironmentalData(humidity, temperature);
+}
 
 CCS811Sensor::~CCS811Sensor()
 {

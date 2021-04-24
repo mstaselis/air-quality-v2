@@ -1,13 +1,11 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <LiquidCrystal_I2C.h>
 #include <CCS811Sensor.h>
 #include <DHT.h>
 #include <SoftTimer.h>
 
-#define LCD_ADDRESS 0x3F
 #define SENSOR_ADDRESS 0x5B
-#define DHTTYPE DHT11
+#define DHTTYPE DHT22
 #define INT_PIN 6
 #define WAKE_PIN 7
 #define TEMP_SENSOR_PIN 5
@@ -23,7 +21,7 @@ struct AirQualityData
     int gasesPPM;
 };
 
-void UpdateLCD(Task *me);
+void UpdateSerial(Task *me);
 void ReadCCS811Sensor(Task *me);
 void ReadGassSensorData(Task *me);
 void ReadTemperatureAndHumidity(Task *me);

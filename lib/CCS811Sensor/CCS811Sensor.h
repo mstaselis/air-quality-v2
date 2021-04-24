@@ -18,5 +18,6 @@ class CCS811Sensor
     ~CCS811Sensor();  
 
     void Init(); 
+    void SetBaseData(float temperature, float humidity = 30);
     CCS811SensorData GetSensorData();     
 };
